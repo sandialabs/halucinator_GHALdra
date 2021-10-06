@@ -1,0 +1,82 @@
+# Copyright 2021 National Technology & Engineering Solutions of Sandia, LLC (NTESS). 
+# Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains 
+# certain rights in this software.
+
+# This is where the log of emulation will be saved to.
+# It saves DEBUG info and execution info along with the State at each PCODE operation
+logfilename: $HOME/ghidra_outputs/ghidra-emu.log             
+
+output_directory: $HOME/ghidra_outputs/
+
+debug: False 
+
+#This specifies how many instructions to save/print from command line with the `i` command
+num_instr_to_save: 10
+
+entry_point: 0x0800103c #Use this for .elf file entry point, memory decompiled correctly from elf
+# entry_point: 0x08000808 #Use this for .bin file entry point, sets up more memory before going to main
+
+# You can mass specify breakpoints here instead of having to type them in
+breakpoints:
+  - 0x0
+  # - 0x0800080e
+  
+intercepts: 
+
+# -------------------------------UART ----------------------------------------
+- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART 
+  function: HAL_UART_Init
+  addr: 0x0800125c
+
+- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART 
+  function: HAL_UART_GetState
+  addr: 0x08001614
+
+- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART
+  function: HAL_UART_Transmit_IT
+  addr: 0x080012f8
+
+- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART
+  function: HAL_UART_Receive_IT
+  addr: 0x08001384
+
+# # ----------------------------------------------------------------------------
+
+# # -------------------------------Generic ------------------------------------
+
+- class: halucinator.bp_handlers.generic.timer.Timer
+  function: HAL_GetTick
+  addr: 0x08001024
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_Init
+  addr: 0x08000f50
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_InitTick
+  addr: 0x08000fa0
+- class: halucinator.bp_handlers.Counter 
+  function: HAL_IncTick
+  addr: 0x08001000
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_MspInit
+  addr: 0x08000f94
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_RCC_ClockConfig
+  addr: 0x0800085c
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_RCC_GetHCLKFreq
+  addr: 0x08000b6c
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_RCC_GetPCLK1Freq
+  addr: 0x08000b84
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_RCC_GetSysClockFreq
+  addr: 0x08000a20
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_RCC_OscConfig
+  addr: 0x08001db0
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_SYSTICK_Config
+  addr: 0x08002634
+- class: halucinator.bp_handlers.ReturnZero 
+  function: HAL_PWREx_EnableOverDrive
+  addr: 0x08002230

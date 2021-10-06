@@ -1,0 +1,54 @@
+# Copyright 2021 National Technology & Engineering Solutions of Sandia, LLC (NTESS). 
+# Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains 
+# certain rights in this software.
+
+# This is where the log of emulation will be saved to.
+# It saves DEBUG info and execution info along with the State at each PCODE operation
+logfilename: $HOME/ghidra_outputs/ghidra-emu.log             
+
+output_directory: $HOME/ghidra_outputs/
+
+debug: False         
+
+#This specifies how many instructions to save/print from command line with the `i` command
+numInstrToSave: 10
+
+entry_point: 0x004009e4
+
+# You can mass specify breakpoints here instead of having to type them in
+breakpoints:
+  - 0x0
+  
+intercepts: 
+
+- addr: 0x004005f0 #0x00413020 #
+  function: printf
+  class: halucinator.bp_handlers.Libc6 
+
+- addr: 0x00413020
+  function: printf
+  class: halucinator.bp_handlers.SkipFunc
+
+- addr: 0x00413028
+  function: __libc_start_main
+  class: halucinator.bp_handlers.SkipFunc
+
+- addr: 0x00413030
+  function: __stack_chk_fail
+  class: halucinator.bp_handlers.SkipFunc
+  
+- addr: 0x00413000
+  function: __gmon_start__
+  class: halucinator.bp_handlers.SkipFunc
+
+- addr: 0x00413010
+  function: abort
+  class: halucinator.bp_handlers.SkipFunc
+
+- addr: 0x00413018
+  function: nanosleep
+  class: halucinator.bp_handlers.SkipFunc
+
+- addr: 0x004005d0 #0x00413008
+  function: puts
+  class: halucinator.bp_handlers.Libc6
